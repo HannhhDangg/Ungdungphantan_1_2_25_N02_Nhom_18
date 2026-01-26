@@ -28,7 +28,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchRequests();
 
-    // 1. Kết nối thẳng vào Port 3000 (Tránh lỗi Proxy của Vite)
     const socket = io("/", {
       transports: ["websocket", "polling"], // Ưu tiên Websocket
       upgrade: true,

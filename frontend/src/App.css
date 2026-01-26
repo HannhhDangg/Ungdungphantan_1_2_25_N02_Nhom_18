@@ -9,8 +9,8 @@
   --text-dark: #1f2937;
   --text-light: #6b7280;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --radius: 12px; /* Bo góc mềm mại */
 }
 
@@ -351,4 +351,41 @@ body {
 .logout-btn:hover {
   background: #fecaca;
   color: #dc2626;
+}
+
+/* OTP Input */
+.otp-inputs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.otp-field {
+  width: 40px;
+  height: 50px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+}
+
+.otp-field:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.verify-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.error-text {
+  color: red;
+  font-size: 14px;
 }

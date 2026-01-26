@@ -33,8 +33,9 @@ const EmployeeHome = () => {
 
   // --- 3. THÊM SOCKET ĐỂ NHẬN THÔNG BÁO ---
   useEffect(() => {
-    const socket = io("http://localhost:3000", {
+    const socket = io("/", {
       transports: ["websocket", "polling"],
+      upgrade: true,
     });
 
     socket.on("leave_status_update", (data) => {

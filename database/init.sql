@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100),
     phone_number VARCHAR(15),
     avatar_url VARCHAR(255),
+    max_leave_days INT DEFAULT 12, -- Số ngày nghỉ phép tối đa trong năm
     
     -- Phân quyền: STAFF (Nhân viên), MANAGER (Quản lý), ADMIN (Quản trị)
     role VARCHAR(20) DEFAULT 'STAFF', 
@@ -47,28 +48,3 @@ CREATE TABLE IF NOT EXISTS leave_requests (
     approver_id INT REFERENCES users(id),
     rejection_reason TEXT 
 );
-
--- 3. DỮ LIỆU MẪU (Dùng để hiển thị danh sách, KHÔNG DÙNG ĐỂ ĐĂNG NHẬP NGAY)
--- Lưu ý: Mật khẩu ở đây là text thường ('123456'), Backend dùng bcrypt nên sẽ không khớp.
--- Bạn cần làm theo hướng dẫn bên dưới để có tài khoản đăng nhập được.
-
--- Tạo Admin giả
-INSERT INTO users (username, password, full_name, email, role, status) 
-VALUES ('admin', '123456', 'Super Admin', 'admin@test.com', 'ADMIN', 'ACTIVE');
-
--- Tạo Manager giả
-INSERT INTO users (username, password, full_name, email, role, status) 
-VALUES ('manager_1', '123456', 'Trần Quản Lý ', 'manager@test.com', 'MANAGER', 'ACTIVE');
-
--- Tạo Staff giả (ID=3)
-INSERT INTO users (username, password, full_name, email, role, status) 
-VALUES ('staff_1', '123456', 'Nguyễn Nhân Viên ', 'staff@test.com', 'STAFF', 'ACTIVE');
-
--- Tạo đơn nghỉ phép mẫu cho nhân viên ID 3
--- Đơn 1: Đã được duyệt
-INSERT INTO leave_requests (user_id, reason, start_date, end_date, total_days, status, created_at, approved_at) 
-VALUES (3, 'Bị ốm sốt cao', '2024-01-10', '2024-01-11', 1, 'APPROVED', NOW(), NOW());
-
--- Đơn 2: Chờ duyệt
-INSERT INTO leave_requests (user_id, reason, start_date, end_date, total_days, status, created_at) 
-VALUES (3, 'Đi đám cưới bạn', '2024-02-20', '2024-02-22', 2, 'PENDING', NOW());

@@ -32,8 +32,9 @@ const LeavePage = () => {
     fetchLeaves(); // Tải dữ liệu lần đầu
 
     // 1. Kết nối Socket
-    const socket = io("http://localhost:3000", {
+    const socket = io("/", {
       transports: ["websocket", "polling"],
+      upgrade: true,
     });
 
     // 2. Lắng nghe sự kiện
@@ -272,7 +273,7 @@ const LeavePage = () => {
                       <td style={{ padding: "10px" }}>
                         <div>
                           {new Date(leave.start_date).toLocaleDateString(
-                            "vi-VN"
+                            "vi-VN",
                           )}
                         </div>
                         <div style={{ fontSize: "12px", color: "#666" }}>

@@ -23,8 +23,13 @@ const upload = multer({ storage: storage });
 // --- 1. ADMIN: Lấy danh sách toàn bộ nhân viên ---
 router.get("/", async (req, res) => {
   try {
+    console.log("API /api/users được gọi");
     const result = await pool.query(
       "SELECT id, username, full_name, email, phone_number, role, status, avatar_url, max_leave_days FROM users ORDER BY id ASC",
+    );
+    console.log(
+      "Lấy danh sách users:---------------------------",
+      process.env.HOSTNAME,
     );
     res.json(result.rows);
   } catch (err) {

@@ -35,7 +35,7 @@ router.get("/balance/:user_id", async (req, res) => {
     if (userRes.rows.length === 0)
       return res.status(404).json({ message: "User not found" });
 
-    const maxDays = userRes.rows[0].max_leave_days || 40;
+    const maxDays = userRes.rows[0].max_leave_days || 12;
     const usedRes = await pool.query(
       `SELECT SUM(total_days) as used FROM leave_requests 
        WHERE user_id = $1 AND status = 'APPROVED' AND EXTRACT(YEAR FROM start_date) = $2`,
@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
 
     const fullName = userRes.rows[0].full_name;
-    const maxDays = userRes.rows[0].max_leave_days || 40;
+    const maxDays = userRes.rows[0].max_leave_days || 12;
 
     const usedRes = await pool.query(
       `SELECT SUM(total_days) as used FROM leave_requests 
@@ -73,11 +73,9 @@ router.post("/", async (req, res) => {
     const usedDays = parseInt(usedRes.rows[0].used) || 0;
 
     if (usedDays + total_days > maxDays)
-      return res
-        .status(400)
-        .json({
-          message: `Không đủ ngày phép! (Đã dùng: ${usedDays}/${maxDays})`,
-        });
+      return res.status(400).json({
+        message: `Không đủ ngày phép! (Đã dùng: ${usedDays}/${maxDays})`,
+      });
 
     // Check 2: Giới hạn 5 người nghỉ cùng lúc
     const checkLimit = await pool.query(

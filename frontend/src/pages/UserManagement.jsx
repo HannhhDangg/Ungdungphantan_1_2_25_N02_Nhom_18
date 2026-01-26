@@ -16,6 +16,7 @@ const UserManagement = () => {
       const res = await fetch("/api/users");
       if (res.ok) {
         const data = await res.json();
+        console.log("Dữ liệu nhận được từ API:", data); // Thêm dòng này để kiểm tra F12
         setUsers(data);
       }
     } catch (err) {
@@ -27,6 +28,7 @@ const UserManagement = () => {
 
   useEffect(() => {
     fetchUsers();
+    console.log("Gọi fetchUsers từ useEffect");
   }, []);
 
   const handleToggleStatus = async (user) => {
@@ -46,6 +48,7 @@ const UserManagement = () => {
       });
       if (res.ok) {
         alert("Cập nhật thành công!");
+        console.log("Cập nhật trạng thái thành công cho user ID:", user.id);
         fetchUsers();
       } else {
         alert("Lỗi cập nhật!");

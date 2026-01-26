@@ -24,13 +24,14 @@ const AdminDashboard = () => {
     }
   };
 
-  // --- 🔥 KẾT NỐI SOCKET (SỬA LẠI) 🔥 ---
+  // --- KẾT NỐI SOCKET (SỬA LẠI) ---
   useEffect(() => {
     fetchRequests();
 
     // 1. Kết nối thẳng vào Port 3000 (Tránh lỗi Proxy của Vite)
-    const socket = io("http://localhost:3000", {
+    const socket = io("/", {
       transports: ["websocket", "polling"], // Ưu tiên Websocket
+      upgrade: true,
     });
 
     // 2. Kiểm tra xem có kết nối được không
@@ -58,7 +59,7 @@ const AdminDashboard = () => {
     const actionName = status === "APPROVED" ? "DUYỆT" : "TỪ CHỐI";
     if (
       !window.confirm(
-        `Bạn chắc chắn muốn ${actionName} đơn của ${employeeName}?`
+        `Bạn chắc chắn muốn ${actionName} đơn của ${employeeName}?`,
       )
     )
       return;
@@ -306,7 +307,7 @@ const AdminDashboard = () => {
                               handleUpdateStatus(
                                 req.id,
                                 "APPROVED",
-                                req.full_name
+                                req.full_name,
                               )
                             }
                             style={{
@@ -326,7 +327,7 @@ const AdminDashboard = () => {
                               handleUpdateStatus(
                                 req.id,
                                 "REJECTED",
-                                req.full_name
+                                req.full_name,
                               )
                             }
                             style={{

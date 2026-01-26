@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+// Thay vì ./components/OtpInput, bạn phải lùi ra một cấp thư mục bằng ../
+import OtpInput from "../components/OtpInput";
 
 const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
+  const [isOtpStep, setIsOtpStep] = useState(false); // Trạng thái chuyển sang nhập OTP
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
 
-  // State form (Dữ liệu nhập vào từ ô input)
+  // State form
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -16,65 +21,85 @@ const Login = () => {
     role: "STAFF",
   });
 
-  const handleSubmit = async (e) => {
+  // --- BƯỚC 1: GỬI MÃ OTP (DÀNH CHO ĐĂNG KÝ) ---
+  const handleRequestOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const endpoint = isRegister ? "/api/auth/register" : "/api/auth/login";
-
     try {
-      // Chuẩn bị dữ liệu gửi đi
-      // Khi đăng ký: Backend cần "fullName", "phone" (như khai báo ở backend routes)
-      // Khi đăng nhập: Chỉ cần username, password
-      const bodyData = isRegister
-        ? {
-            username: formData.username,
-            password: formData.password,
-            fullName: formData.fullName, // Gửi đúng tên biến Backend chờ
-            email: formData.email,
-            phone: formData.phone,
-            role: formData.role,
-          }
-        : {
-            username: formData.username,
-            password: formData.password,
-          };
-
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/otp/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bodyData),
+        body: JSON.stringify({ email: formData.email }),
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message || "Có lỗi xảy ra");
+      if (res.ok) {
+        alert("Mã OTP đã được gửi vào Email của bạn!");
+        setIsOtpStep(true); // Chuyển sang giao diện nhập OTP
       } else {
-        // --- XỬ LÝ THÀNH CÔNG ---
-        if (isRegister) {
-          alert("Đăng ký thành công! Vui lòng chờ Admin xét duyệt.");
-          setIsRegister(false); // Chuyển về form đăng nhập
-        } else {
-          alert("Đăng nhập thành công!");
-
-          // 1. Lưu Token
-          localStorage.setItem("token", data.token);
-
-          // 2. Lưu User (Lúc này data.user đã có đủ email, avatar nhờ sửa Backend)
-          localStorage.setItem("user", JSON.stringify(data.user));
-
-          // 3. Chuyển trang
-          if (data.user.role === "ADMIN" || data.user.role === "MANAGER") {
-            navigate("/admin");
-          } else {
-            navigate("/employee");
-          }
-        }
+        alert(data.message || "Không thể gửi mã OTP");
       }
     } catch (err) {
-      console.error("Lỗi:", err);
-      alert("Không kết nối được tới Server backend!");
+      alert("Lỗi kết nối Server!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- BƯỚC 2: XÁC THỰC OTP THÀNH CÔNG THÌ MỚI GỌI REGISTER ---
+  const handleVerifySuccess = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Đăng ký thành công! Vui lòng chờ Admin xét duyệt.");
+        setIsRegister(false);
+        setIsOtpStep(false);
+      } else {
+        alert(data.message || "Lỗi đăng ký");
+      }
+    } catch (err) {
+      alert("Lỗi hệ thống!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- LUỒNG ĐĂNG NHẬP THÔNG THƯỜNG ---
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        if (data.user.role === "ADMIN" || data.user.role === "MANAGER") {
+          navigate("/admin");
+        } else {
+          navigate("/employee");
+        }
+      } else {
+        alert(data.message || "Sai thông tin đăng nhập");
+      }
+    } catch (err) {
+      alert("Lỗi kết nối Server!");
     } finally {
       setLoading(false);
     }
@@ -86,83 +111,113 @@ const Login = () => {
         <h2
           style={{ textAlign: "center", color: "#333", marginBottom: "20px" }}
         >
-          {isRegister ? "Đăng Ký Tài Khoản" : "Đăng Nhập"}
+          {isRegister
+            ? isOtpStep
+              ? "Xác thực mã OTP"
+              : "Đăng Ký Tài Khoản"
+            : "Đăng Nhập"}
+
+          {/* {!isRegister && !isForgotPassword && (
+            <p style={styles.link} onClick={() => setIsForgotPassword(true)}>
+              Quên mật khẩu?
+            </p>
+          )} */}
         </h2>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {isRegister && (
-            <>
-              <input
-                required
-                placeholder="Họ và tên"
-                value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
-                style={styles.input}
-              />
-              <input
-                required
-                placeholder="Email"
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                style={styles.input}
-              />
-              <input
-                required
-                placeholder="Số điện thoại"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                style={styles.input}
-              />
-            </>
-          )}
-
-          <input
-            required
-            placeholder="Tên đăng nhập"
-            value={formData.username}
-            onChange={(e) =>
-              setFormData({ ...formData, username: e.target.value })
-            }
-            style={styles.input}
+        {/* HIỂN THỊ Ô NHẬP OTP NẾU ĐANG Ở BƯỚC OTP */}
+        {isRegister && isOtpStep ? (
+          <OtpInput
+            email={formData.email}
+            onVerifySuccess={handleVerifySuccess}
           />
-          <input
-            required
-            placeholder="Mật khẩu"
-            type="password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-            style={styles.input}
-          />
+        ) : (
+          <form
+            onSubmit={isRegister ? handleRequestOtp : handleLogin}
+            style={styles.form}
+          >
+            {isRegister && (
+              <>
+                <input
+                  required
+                  placeholder="Họ và tên"
+                  value={formData.fullName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fullName: e.target.value })
+                  }
+                  style={styles.input}
+                />
+                <input
+                  required
+                  placeholder="Email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  style={styles.input}
+                />
+                <input
+                  required
+                  placeholder="Số điện thoại"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  style={styles.input}
+                />
+              </>
+            )}
 
-          <button type="submit" disabled={loading} style={styles.button}>
-            {loading
-              ? "Đang xử lý..."
-              : isRegister
-              ? "Gửi Đăng Ký"
-              : "Đăng Nhập"}
-          </button>
-        </form>
+            <input
+              required
+              placeholder="Tên đăng nhập"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
+              style={styles.input}
+            />
+            <input
+              required
+              placeholder="Mật khẩu"
+              type="password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              style={styles.input}
+            />
 
-        <p style={styles.link} onClick={() => setIsRegister(!isRegister)}>
-          {isRegister
-            ? "Đã có tài khoản? Đăng nhập ngay"
-            : "Chưa có tài khoản? Đăng ký tại đây"}
-        </p>
+            <button type="submit" disabled={loading} style={styles.button}>
+              {loading
+                ? "Đang xử lý..."
+                : isRegister
+                  ? "Tiếp tục"
+                  : "Đăng Nhập"}
+            </button>
+          </form>
+        )}
+
+        {/* NÚT QUAY LẠI / CHUYỂN FORM */}
+        {!isOtpStep && (
+          <p style={styles.link} onClick={() => setIsRegister(!isRegister)}>
+            {isRegister
+              ? "Đã có tài khoản? Đăng nhập ngay"
+              : "Chưa có tài khoản? Đăng ký tại đây"}
+          </p>
+        )}
+
+        {isOtpStep && (
+          <p style={styles.link} onClick={() => setIsOtpStep(false)}>
+            Quay lại sửa thông tin
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
-// CSS viết gọn vào object
+// Styles giữ nguyên như bản cũ của bạn
 const styles = {
   container: {
     height: "100vh",
@@ -197,7 +252,6 @@ const styles = {
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: "bold",
-    transition: "0.3s",
   },
   link: {
     textAlign: "center",

@@ -2,8 +2,7 @@ version: "3.8"
 
 services:
   # --- 1. Load Balancer (Nginx) ---
-  # Đóng vai trò cửa ngõ, phân tải vào các Backend
-  # Đáp ứng: Chương 8 (Load Balancing)
+  # Đóng vai trò cửa ngõ, phân tải vào các Backend (Load Balancing)
   nginx:
     image: nginx:latest
     container_name: lb-nginx
@@ -21,10 +20,10 @@ services:
   # Đáp ứng: Chương 2 (Kiến trúc), Chương 3 (Tiến trình)
   backend:
     build: ./backend
-    container_name: backend # Đặt tên cố định
+    # container_name: backend # Đặt tên cố định
     restart: always
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     environment:
       - PORT=3000
       - DB_HOST=postgres
@@ -39,7 +38,7 @@ services:
     volumes:
       - ./backend:/app # <--- QUAN TRỌNG: Đồng bộ code từ máy vào Docker
       - /app/node_modules # Giữ nguyên thư viện bên trong
-      - ./backend/uploads:/app/uploads # <--- QUAN TRỌNG: Giữ lại ảnh khi restart
+      - ./backend/uploads:/app/uploads # <--- QUAN TRỌNG: Giữ lại ảnh restart
     depends_on:
       - postgres
       - mongo
@@ -57,7 +56,6 @@ services:
       - ./frontend:/app
       - /app/node_modules
       # Trước đây, Docker "dùng chung" thư mục node_modules với máy thật, Khi Docker khởi động, nó tìm thấy bản cài đặt của Windows -> Nó không hiểu và báo lỗi Cannot find module...linux....
-      # tạo một thư mục node_modules riêng biệt ở trong container, đừng liên quan gì đến thư mục ở ngoài máy Windows cả!
       # =>Docker tự tải phiên bản Linux về dùng riêng. Máy Windows của bạn có cài gì cũng không ảnh hưởng đến nó nữa.
     environment:
       - REACT_APP_API_URL=http://localhost:80 # React gọi API qua Nginx (Port 80)
@@ -78,6 +76,7 @@ services:
       POSTGRES_DB: leave_management
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # Tự động chạy script khởi tạo
     ports:
       - "5433:5432"
     networks:

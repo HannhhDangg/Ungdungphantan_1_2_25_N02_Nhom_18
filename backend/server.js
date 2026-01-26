@@ -72,3 +72,7 @@ app.get("/api/test-db", async (req, res) => {
 server.listen(port, () => {
   console.log(`🚀 Server đang chạy tại http://localhost:${port}`);
 });
+
+const otpRoute = require("./routes/otp");
+// ... các route cũ
+app.use("/api/otp", otpRoute);

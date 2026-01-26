@@ -34,8 +34,9 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     fetchLeaves();
 
-    const socket = io("http://localhost:3000", {
+    const socket = io("/", {
       transports: ["websocket", "polling"],
+      upgrade: true,
     });
 
     socket.on("leave_status_update", (data) => {

@@ -26,6 +26,9 @@ const AdminDashboard = () => {
 
   // --- KẾT NỐI SOCKET (SỬA LẠI) ---
   useEffect(() => {
+    console.log(
+      "🔄 Khởi tạo kết nối Socket và tải dữ liệu..------------------------------------.",
+    );
     fetchRequests();
 
     const socket = io("/", {

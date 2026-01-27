@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("../../auth_service/db");
-const LeaveLog = require("../../auth_service/models/LeaveLog"); // 🔥 Import Model MongoDB
+const pool = require("../db");
+const LeaveLog = require("../models/LeaveLog"); // 🔥 Import Model MongoDB
 
 // --- 1. ADMIN: Lấy thống kê tổng quan ---
 router.get("/stats/admin-summary", async (req, res) => {
@@ -86,7 +86,7 @@ router.post("/", async (req, res) => {
     if (parseInt(checkLimit.rows[0].count) >= 5)
       return res
         .status(400)
-        .json({ message: "Ngày này đã full lịch nghỉ (max 5 người)!" });
+        .json({ message: "Số người nghỉ trong ngày này 5/5 người!" });
 
     // 1. Tạo đơn trong PostgreSQL
     const result = await pool.query(
@@ -115,7 +115,7 @@ router.post("/", async (req, res) => {
       },
     });
 
-    // 3. Socket báo Admin
+    // Socket báo Admin
     try {
       const io = req.app.get("socketio");
       if (io)
@@ -161,8 +161,12 @@ router.get("/:user_id", async (req, res) => {
 });
 
 // --- 6. ADMIN: Lấy TOÀN BỘ đơn của tất cả nhân viên ---
+const test1 = require("/common/test");
+
+// --- 6. ADMIN: Lấy TOÀN BỘ đơn của tất cả nhân viên ---
 router.get("/", async (req, res) => {
   try {
+    test1();
     const result = await pool.query(`
       SELECT lr.*, u.full_name, u.avatar_url FROM leave_requests lr
       JOIN users u ON lr.user_id = u.id ORDER BY lr.created_at DESC

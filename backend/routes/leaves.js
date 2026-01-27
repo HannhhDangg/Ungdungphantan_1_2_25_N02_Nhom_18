@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("../db");
-const LeaveLog = require("../models/LeaveLog"); // 🔥 Import Model MongoDB
+const pool = require("../../auth_service/db");
+const LeaveLog = require("../../auth_service/models/LeaveLog"); // 🔥 Import Model MongoDB
 
 // --- 1. ADMIN: Lấy thống kê tổng quan ---
 router.get("/stats/admin-summary", async (req, res) => {

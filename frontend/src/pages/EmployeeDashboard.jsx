@@ -20,7 +20,7 @@ const EmployeeDashboard = () => {
   const fetchLeaves = useCallback(async () => {
     if (!user?.id) return;
     try {
-      const res = await fetch(`/api/leave_ser/${user.id}`);
+      const res = await fetch(`/api/users/${user.id}`);
       if (res.ok) {
         const data = await res.json();
         setLeaves(data);

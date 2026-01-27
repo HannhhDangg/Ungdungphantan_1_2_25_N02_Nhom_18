@@ -20,7 +20,7 @@ const EmployeeDashboard = () => {
   const fetchLeaves = useCallback(async () => {
     if (!user?.id) return;
     try {
-      const res = await fetch(`/api/leaves/${user.id}`);
+      const res = await fetch(`/api/leave_ser/${user.id}`);
       if (res.ok) {
         const data = await res.json();
         setLeaves(data);
@@ -78,7 +78,7 @@ const EmployeeDashboard = () => {
       return toast.warning("Ngày kết thúc phải sau ngày bắt đầu!");
 
     try {
-      const res = await fetch("/api/leaves", {
+      const res = await fetch("/api/leave_ser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -12,14 +12,14 @@ const EmployeeHome = () => {
   // --- 2. TÁCH HÀM FETCH DATA RA ĐỂ DÙNG LẠI ---
   const fetchData = useCallback(() => {
     // Lấy thống kê hôm nay
-    fetch("/api/leaves/stats/today")
+    fetch("/api/leave_ser/stats/today")
       .then((res) => res.json())
       .then((data) => setLeaveCount(data.count))
       .catch((err) => console.error(err));
 
     // Lấy quỹ phép cá nhân
     if (user?.id) {
-      fetch(`/api/leaves/balance/${user.id}`)
+      fetch(`/api/leave_ser/balance/${user.id}`)
         .then((res) => res.json())
         .then((data) => setBalance(data))
         .catch((err) => console.error(err));

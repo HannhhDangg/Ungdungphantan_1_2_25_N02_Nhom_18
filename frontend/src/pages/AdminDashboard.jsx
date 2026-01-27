@@ -11,7 +11,7 @@ const AdminDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch("/api/leaves");
+      const res = await fetch("/api/leave_ser");
       if (res.ok) {
         const data = await res.json();
         setRequests(data);
@@ -63,7 +63,7 @@ const AdminDashboard = () => {
     )
       return;
     try {
-      const res = await fetch(`/api/leaves/${id}/status`, {
+      const res = await fetch(`/api/leave_ser/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),

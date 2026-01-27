@@ -46,6 +46,62 @@ services:
     networks:
       - app-network # Tự khởi động lại nếu crash (Chương 8: Tính chịu lỗi)
 
+  auth_service:
+    build: ./auth_service
+    # container_name: backend # Đặt tên cố định
+    restart: always
+    # ports:
+    #   - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=rootpassword
+      - DB_NAME=leave_management
+      - MONGO_URI=mongodb://mongo:27017/logs_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=secret_key_cua_ban # Nhớ dòng này nếu dùng JWT
+    volumes:
+      - ./auth_service:/app # <--- QUAN TRỌNG: Đồng bộ code từ máy vào Docker
+      - /app/node_modules # Giữ nguyên thư viện bên trong
+      # - ./auth_service/uploads:/app/uploads # <--- QUAN TRỌNG: Giữ lại ảnh restart
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+    networks:
+      - app-network # Tự khởi động lại nếu crash (Chương 8: Tính chịu lỗi)
+
+  leave_service:
+    build: ./leave_service
+    # container_name: backend # Đặt tên cố định
+    restart: always
+    # ports:
+    #   - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=rootpassword
+      - DB_NAME=leave_management
+      - MONGO_URI=mongodb://mongo:27017/logs_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=secret_key_cua_ban # Nhớ dòng này nếu dùng JWT
+    volumes:
+      - ./leave_service:/app # <--- QUAN TRỌNG: Đồng bộ code từ máy vào Docker
+      - /app/node_modules # Giữ nguyên thư viện bên trong
+      # - ./leave_service/uploads:/app/uploads # <--- QUAN TRỌNG: Giữ lại ảnh restart
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+    networks:
+      - app-network # Tự khởi động lại nếu crash (Chương 8: Tính chịu lỗi)
+
   # --- 3. Frontend (ReactJS) ---
   frontend:
     build: ./frontend

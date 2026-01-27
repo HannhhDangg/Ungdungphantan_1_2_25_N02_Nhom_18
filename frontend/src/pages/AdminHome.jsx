@@ -11,7 +11,7 @@ const AdminHome = () => {
   // --- 2. HÀM LẤY DỮ LIỆU THỐNG KÊ TỪ API ---
   const fetchStats = () => {
     // Gọi API để lấy tổng nhân sự và số người vắng mặt [cite: 32]
-    fetch("/api/leaves/stats/admin-summary")
+    fetch("/api/leave_ser/stats/admin-summary")
       .then((res) => res.json())
       .then((data) => setStats(data))
       .catch((err) => console.error("Lỗi lấy thống kê:", err));

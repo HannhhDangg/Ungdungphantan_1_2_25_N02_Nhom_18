@@ -9,9 +9,7 @@ const { createAdapter } = require("@socket.io/redis-adapter");
 const mongoose = require("mongoose"); // 🔥 THIẾU DÒNG NÀY
 
 // Import routes
-const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
-const leaveRoutes = require("./routes/leaves");
 
 const app = express();
 const server = http.createServer(app);
@@ -48,9 +46,8 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Sử dụng Routes
-app.use("/api/auth", authRoutes);
+
 app.use("/api/users", userRoutes);
-app.use("/api/leaves", leaveRoutes);
 
 // --- 🔥 KẾT NỐI MONGODB (Đã sửa vị trí) ---
 const mongoURI = process.env.MONGO_URI || "mongodb://db-mongo:27017/leave_logs"; // Chú ý: dùng 'db-mongo' theo tên container trong log của bạn
@@ -72,7 +69,3 @@ app.get("/api/test-db", async (req, res) => {
 server.listen(port, () => {
   console.log(`🚀 Server đang chạy tại http://localhost:${port}`);
 });
-
-const otpRoute = require("./routes/otp");
-// ... các route cũ
-app.use("/api/otp", otpRoute);

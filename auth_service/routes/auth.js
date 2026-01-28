@@ -13,7 +13,7 @@ router.post("/register", async (req, res) => {
     // Kiểm tra user tồn tại
     const userExist = await pool.query(
       "SELECT * FROM users WHERE username = $1",
-      [username]
+      [username],
     );
     if (userExist.rows.length > 0) {
       return res.status(400).json({ message: "Tên đăng nhập đã tồn tại!" });
@@ -26,7 +26,7 @@ router.post("/register", async (req, res) => {
     // Trạng thái mặc định
     const status = "PENDING_ADMIN";
 
-    // Lưu vào DB (Chú ý mapping: fullName -> full_name, phone -> phone_number)
+    // Lưu vào DB
     const newUser = await pool.query(
       `INSERT INTO users (username, password, full_name, email, phone_number, role, status) 
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
@@ -38,7 +38,7 @@ router.post("/register", async (req, res) => {
         phone,
         role || "STAFF",
         status,
-      ]
+      ],
     );
 
     res.status(201).json({
@@ -77,18 +77,16 @@ router.post("/login", async (req, res) => {
 
     // Kiểm tra trạng thái
     if (user.status !== "ACTIVE") {
-      return res
-        .status(403)
-        .json({
-          message: "Tài khoản chưa được kích hoạt hoặc đang chờ duyệt.",
-        });
+      return res.status(403).json({
+        message: "Tài khoản chưa được kích hoạt hoặc đang chờ duyệt.",
+      });
     }
 
     // Tạo Token
     const token = jwt.sign(
       { id: user.id, role: user.role, username: user.username },
       process.env.JWT_SECRET || "bi_mat_khong_the_bat_mi",
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     // --- QUAN TRỌNG: Tách mật khẩu ra, trả về toàn bộ thông tin còn lại ---

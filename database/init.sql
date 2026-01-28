@@ -1,5 +1,4 @@
 -- 1. Bảng Users (Nhân viên/Quản lý/Admin)
--- Lưu ý: Cột password sẽ lưu mã hóa (bcrypt), không lưu text thường
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -8,16 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100),
     phone_number VARCHAR(15),
     avatar_url VARCHAR(255),
-    max_leave_days INT DEFAULT 12, -- Số ngày nghỉ phép tối đa trong năm
-    
-    -- Phân quyền: STAFF (Nhân viên), MANAGER (Quản lý), ADMIN (Quản trị)
+    max_leave_days INT DEFAULT 12, 
     role VARCHAR(20) DEFAULT 'STAFF', 
-    
-    -- Trạng thái: 
-    -- 'PENDING_ADMIN': Chờ Admin duyệt
-    -- 'PENDING_MANAGER': Chờ Manager duyệt (nếu cần quy trình 2 bước)
-    -- 'ACTIVE': Đã kích hoạt, được phép đăng nhập
-    -- 'LOCKED': Bị khóa
     status VARCHAR(20) DEFAULT 'PENDING_ADMIN', 
     
     -- Các trường phục vụ tính năng OTP và Logic nghiệp vụ
@@ -32,7 +23,6 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS leave_requests (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id), -- Liên kết với bảng users
-    
     reason TEXT, -- Lý do nghỉ
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,

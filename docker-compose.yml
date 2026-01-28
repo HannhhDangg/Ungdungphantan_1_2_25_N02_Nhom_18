@@ -68,7 +68,7 @@ services:
       - ./leave_service:/app # <--- QUAN TRỌNG: Đồng bộ code từ máy vào Docker
       - ./common:/common # <--- QUAN TRỌNG: Đồng bộ code từ máy vào Docker
       - /app/node_modules # Giữ nguyên thư viện bên trong
-      # - ./leave_service/uploads:/app/uploads # <--- QUAN TRỌNG: Giữ lại ảnh restart
+      - ./leave_service/uploads:/app/uploads # <--- QUAN TRỌNG: Giữ lại ảnh restart
     depends_on:
       - postgres
       - mongo

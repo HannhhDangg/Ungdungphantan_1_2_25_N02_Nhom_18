@@ -161,12 +161,8 @@ router.get("/:user_id", async (req, res) => {
 });
 
 // --- 6. ADMIN: Lấy TOÀN BỘ đơn của tất cả nhân viên ---
-const test1 = require("/common/test");
-
-// --- 6. ADMIN: Lấy TOÀN BỘ đơn của tất cả nhân viên ---
 router.get("/", async (req, res) => {
   try {
-    test1();
     const result = await pool.query(`
       SELECT lr.*, u.full_name, u.avatar_url FROM leave_requests lr
       JOIN users u ON lr.user_id = u.id ORDER BY lr.created_at DESC

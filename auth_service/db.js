@@ -1,13 +1,19 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 
-// Lấy thông tin từ biến môi trường (Docker đã cung cấp các biến này)
+// Lấy thông tin từ biến môi trường
 const pool = new Pool({
   user: process.env.DB_USER || "admin",
-  host: process.env.DB_HOST || "localhost", // Docker sẽ dùng tên 'postgres'
+  host: process.env.DB_HOST || "localhost",
   database: process.env.DB_NAME || "leave_management",
-  password: process.env.DB_PASSWORD || "rootpassword", // Mật khẩu trong docker-compose
+  password: process.env.DB_PASSWORD || "rootpassword",
   port: process.env.DB_PORT || 5432,
+
+  // --- THÊM ĐOẠN NÀY ĐỂ SỬA LỖI KẾT NỐI ---
+  ssl: {
+    rejectUnauthorized: false, // Chấp nhận chứng chỉ SSL tự ký của Docker
+  },
+  // ----------------------------------------
 });
 
 // Hàm kiểm tra kết nối

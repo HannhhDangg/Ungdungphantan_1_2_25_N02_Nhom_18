@@ -1,0 +1,22 @@
+_format_version: "2.1"
+
+services:
+  - name: auth-service
+    url: http://auth_service:3000
+    routes:
+      - name: auth-routes
+        paths:
+          - /api/auth_ser
+          - /api/otp
+        strip_path: false
+
+  - name: leave-service
+    url: http://leave_service:3000
+    routes:
+      - name: leave-routes
+        paths:
+          - /api/leave_ser
+          - /api/users
+          - /uploads
+          - /socket.io
+        strip_path: false

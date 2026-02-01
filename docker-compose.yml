@@ -176,6 +176,7 @@ services:
     depends_on:
       - postgres-1
       - postgres-2
+      - postgres-3
     networks:
       - app-network
 

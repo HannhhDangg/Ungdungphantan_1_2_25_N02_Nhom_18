@@ -55,16 +55,6 @@ mongoose
   .then(() => console.log("✅ Đã kết nối MongoDB thành công!"))
   .catch((err) => console.error("❌ Lỗi kết nối MongoDB:", err));
 
-// // API Test
-// app.get("/api/test-db", async (req, res) => {
-//   try {
-//     const result = await pool.query("SELECT * FROM users");
-//     res.json({ message: "DB OK", count: result.rowCount });
-//   } catch (err) {
-//     res.status(500).json({ error: "Lỗi DB" });
-//   }
-// });
-
 server.listen(port, () => {
   console.log(`🚀 Server đang chạy tại http://localhost:${port}`);
 });
